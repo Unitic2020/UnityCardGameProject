@@ -82,3 +82,11 @@ README.txt.meta/
 /Library/CurrentLayout.dwlt
 
 /Library/assetDatabase3
+
+*.dll
+
+/Library/ScriptAssemblies/
+
+/Library/ScriptMapper
+
+/ProjectSettings/ProjectVersion.txt
