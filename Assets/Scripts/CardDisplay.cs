@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class CardDisplay : MonoBehaviour {
 
-    [SerializeField] Image backgroundPanelImage;
     [SerializeField] Text nameText;
     [SerializeField] Text hpText;
     [SerializeField] Text atText;
@@ -14,7 +13,6 @@ public class CardDisplay : MonoBehaviour {
 
     public void Display(CardModel cardModel) {
 
-        backgroundPanelImage.sprite = cardModel.backgroundPanel;
         nameText.text = cardModel.name;
         hpText.text = cardModel.hp.ToString();
         atText.text = cardModel.at.ToString();
