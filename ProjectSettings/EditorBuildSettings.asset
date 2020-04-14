@@ -4,5 +4,26 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Start.unity
+    guid: f64ce6801623f684dbf6ea10fa665080
+  - enabled: 1
+    path: Assets/Scenes/Menu.unity
+    guid: 25848cb736a53574abdbfa592493a2db
+  - enabled: 1
+    path: Assets/Scenes/CardList.unity
+    guid: 21fbb8b41018ad149ab1ad5a050e3947
+  - enabled: 1
+    path: Assets/Scenes/MakeDeck.unity
+    guid: bc55157466640324a9bcdc88990be64d
+  - enabled: 1
+    path: Assets/Scenes/Battle.unity
+    guid: 02feb9b4ca0f4c546a44731377e59e16
+  - enabled: 1
+    path: Assets/Scenes/SelectCreateDeck.unity
+    guid: 03b0d0e78dc5daa4f8da240da0a73225
+  - enabled: 1
+    path: Assets/Scenes/SelectDeckBeforeBattle.unity
+    guid: 302ca626fe7b19f488724d54f47b967c
   m_configObjects: {}
