@@ -11,7 +11,7 @@ public class CardModel {
 
     public CardModel(int cardId) {
 
-        CardEntity cardEntity = Resources.Load<CardEntity>("CardList/Card" + cardId);
+        CardEntity cardEntity = Resources.Load<CardEntity>("CardList/Card" + cardId); // ここに問題がないことを確認しました 確認方法 => pathを変更してエラーがどうなるかの挙動を確認する
         name = cardEntity.name;
         hp = cardEntity.hp;
         at = cardEntity.at;
@@ -19,3 +19,4 @@ public class CardModel {
         icon = cardEntity.icon;
     }
 }
+

@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class CardDisplay : MonoBehaviour {
 
+    CardModel initializeCardModel;
+    public int cardId;
     [SerializeField] Text nameText;
     [SerializeField] Text hpText;
     [SerializeField] Text atText;
@@ -18,5 +20,11 @@ public class CardDisplay : MonoBehaviour {
         atText.text = cardModel.at.ToString();
         costText.text = cardModel.cost.ToString();
         iconImage.sprite = cardModel.icon;
+    }
+
+    public void Initialize(int cardId) {
+
+        initializeCardModel = new CardModel(cardId);
+        Display(initializeCardModel);
     }
 }
