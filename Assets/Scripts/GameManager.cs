@@ -125,7 +125,6 @@ public class GameManager : MonoBehaviour {
 
         displayNumberOfPlayerHandCard.text = "x" + playerHandCardList.Length.ToString();
         displayNumberOfEnemyHandCard.text = "x" + enemyHandCardList.Length.ToString();
-
     }
 
     public void IncreaseManaCost(bool isPlayerTurn){
