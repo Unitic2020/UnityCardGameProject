@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class CardDisplay : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
 
-    CardModel initializeCardModel;
+    public CardModel initializeCardModel;
     public int cardId;
     [SerializeField] Text nameText;
     [SerializeField] Text hpText;
@@ -16,6 +16,7 @@ public class CardDisplay : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     [SerializeField] Image iconImage;
     public bool playerCard;
 
+    public bool canDrag;
 
 
     public void Display(CardModel cardModel)
@@ -44,7 +45,24 @@ public class CardDisplay : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     {
         CardDisplay card = GetComponent<CardDisplay>();
 
+        canDrag = true;
+
         if (!card.playerCard)
+        {
+            canDrag = false;
+        }
+
+        if (card.initializeCardModel.cost > GameManager.gameManagerObject.playerManaCost)
+        {
+            canDrag = false;
+        }
+
+        if (!GameManager.gameManagerObject.turn)
+        {
+            canDrag = false;
+        }
+
+        if (!canDrag)
         {
             return;
         }
@@ -56,6 +74,10 @@ public class CardDisplay : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     // ドラッグ中の動作
     public void OnDrag(PointerEventData eventData)
     {
+        if (!canDrag)
+        {
+            return;
+        }
         CardDisplay card = GetComponent<CardDisplay>();
         if (!card.playerCard)
         {
@@ -67,6 +89,11 @@ public class CardDisplay : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     // ドラッグ終了時の動作
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!canDrag)
+        {
+            return;
+        }
+
         CardDisplay card = GetComponent<CardDisplay>();
         if (!card.playerCard)
         {

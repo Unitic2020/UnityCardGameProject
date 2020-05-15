@@ -27,14 +27,14 @@ public class DropPlace : MonoBehaviour, IDropHandler
         }
 
         //落としてくるカードがないときは処理中断する
-        if (card != null)
+        // 落としてきたカードの親を、このスクリプトがアタッチされている
+        // GameObjectにしてやる。
+        if (card.canDrag)
         {
-            // 落としてきたカードの親を、このスクリプトがアタッチされている
-            // GameObjectにしてやる。
             Debug.Log("親が変われ！");
             card.defaultParent = this.transform;
+
+            GameManager.gameManagerObject.ReduceManaCost(card);
         }
-
-
     }
 }
