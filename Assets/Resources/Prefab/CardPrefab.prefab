@@ -90,6 +90,7 @@ GameObject:
   - component: {fileID: 4690036575550086786}
   - component: {fileID: 1533526656956555607}
   - component: {fileID: 114183149252556064}
+  - component: {fileID: 7671682799707450487}
   m_Layer: 5
   m_Name: CardPrefab
   m_TagString: Untagged
@@ -173,6 +174,8 @@ MonoBehaviour:
   atText: {fileID: 4690036576945080711}
   costText: {fileID: 4690036576605534077}
   iconImage: {fileID: 4936067382767250672}
+  playerCard: 0
+  defaultParent: {fileID: 0}
 --- !u!114 &114183149252556064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,7 +188,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fa284108f6b0624cb294ec23e4896b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initializeCardModel: {fileID: 0}
+--- !u!225 &7671682799707450487
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4690036575550086785}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &4690036576171438666
 GameObject:
   m_ObjectHideFlags: 0

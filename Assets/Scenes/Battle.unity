@@ -1394,6 +1394,7 @@ GameObject:
   - component: {fileID: 924061454}
   - component: {fileID: 924061453}
   - component: {fileID: 924061455}
+  - component: {fileID: 924061456}
   m_Layer: 5
   m_Name: PlayerHandPanel
   m_TagString: Untagged
@@ -1478,6 +1479,19 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
+--- !u!114 &924061456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 924061451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5231c1cc7dedbc7499d019890f94d7ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &985276366
 GameObject:
   m_ObjectHideFlags: 0
@@ -2210,6 +2224,7 @@ MonoBehaviour:
   displayNumberOfPlayerCardInGraveyard: {fileID: 640648}
   displayNumberOfEnemyHandCard: {fileID: 23843547}
   displayNumberOfEnemyCardInGraveyard: {fileID: 289754453}
+  playerHandCardList: []
   turn: 1
   playerSampleDeck: 0100000001000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
   enemySampleDeck: 0100000001000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
@@ -2487,6 +2502,7 @@ GameObject:
   - component: {fileID: 1779824474}
   - component: {fileID: 1779824473}
   - component: {fileID: 1779824475}
+  - component: {fileID: 1779824476}
   m_Layer: 5
   m_Name: PlayerFieldPanel
   m_TagString: Untagged
@@ -2571,6 +2587,19 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
+--- !u!114 &1779824476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1779824471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5231c1cc7dedbc7499d019890f94d7ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 1
 --- !u!1 &1810226238
 GameObject:
   m_ObjectHideFlags: 0
