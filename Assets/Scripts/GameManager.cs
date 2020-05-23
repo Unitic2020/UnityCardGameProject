@@ -32,6 +32,9 @@ public class GameManager : MonoBehaviour
 
     int defaultPlayerManaCost = 0;
     int defaultEnemyManaCost = 0;
+    // 実際のマナコスト
+    public int playerManaCost;
+    int enemyManaCost;
 
     // 他クラスでもGameManagerのオブジェクトを参照できるように、GameManagerのオブジェクトを、staticで宣言。
     public static GameManager gameManagerObject;
@@ -72,13 +75,15 @@ public class GameManager : MonoBehaviour
         if (turn)
         {
             defaultPlayerManaCost += 1;
-            displayPlayerManaCost.text = defaultPlayerManaCost.ToString();
+            playerManaCost = defaultPlayerManaCost;
+            displayPlayerManaCost.text = playerManaCost.ToString();
             StartCoroutine(PlayerTurn());
         }
         else
         {
             defaultEnemyManaCost += 1;
-            displayEnemyManaCost.text = defaultEnemyManaCost.ToString();
+            enemyManaCost = defaultEnemyManaCost;
+            displayEnemyManaCost.text = enemyManaCost.ToString();
             StartCoroutine(EnemyTurn());
         }
     }
@@ -132,10 +137,12 @@ public class GameManager : MonoBehaviour
         turn = !isTurn;
         if (turn)
         {
+            StopAllCoroutines();
             StartCoroutine(PlayerTurn());
         }
         else
         {
+            StopAllCoroutines();
             StartCoroutine(EnemyTurn());
         }
         IncreaseManaCost(turn);
@@ -171,13 +178,42 @@ public class GameManager : MonoBehaviour
         if (isPlayerTurn)
         {
             defaultPlayerManaCost++;
+            playerManaCost = defaultPlayerManaCost;
         }
         else
         {
             defaultEnemyManaCost++;
+            enemyManaCost = defaultEnemyManaCost;
         }
 
-        displayPlayerManaCost.text = defaultPlayerManaCost.ToString();
-        displayEnemyManaCost.text = defaultEnemyManaCost.ToString();
+        displayPlayerManaCost.text = playerManaCost.ToString();
+        displayEnemyManaCost.text = enemyManaCost.ToString();
+    }
+
+    public void ReduceManaCost(CardDisplay card)
+    {
+
+        if (card.playerCard)
+        {
+            playerManaCost -= card.initializeCardModel.cost;
+            displayPlayerManaCost.text = playerManaCost.ToString();
+        }
+        else
+        {
+            enemyManaCost -= card.initializeCardModel.cost;
+            displayEnemyManaCost.text = enemyManaCost.ToString();
+
+        }
+
+    }
+
+
+    public void OnClickTurnEndButton()
+    {
+        if (!this.turn)
+        {
+            return;
+        }
+        SwitchTurn(this.turn);
     }
 }
