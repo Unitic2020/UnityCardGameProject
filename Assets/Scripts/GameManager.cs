@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 
 public class GameManager : MonoBehaviour
 {
-
+    [SerializeField] Transform enemyField;
+    [SerializeField] Transform playerField;
     [SerializeField] public CardDisplay cardPrefab;
     public Transform playerHand;
     [SerializeField] Transform enemyHand;
@@ -98,6 +100,11 @@ public class GameManager : MonoBehaviour
         yourTurnPanel.SetActive(true);
         yield return new WaitForSeconds(2);
         yourTurnPanel.SetActive(false);
+        CardDisplay[] playerFieldCardList = playerField.GetComponentsInChildren<CardDisplay>();
+        for (int i =0; i < playerFieldCardList.Length; i++){
+            playerFieldCardList[i].canAttack = true;
+        }
+
         GiveOutCard(playerSampleDeck, playerHand);
         StartCoroutine(TimeSetting());
     }
@@ -105,20 +112,81 @@ public class GameManager : MonoBehaviour
     /*敵のターンだよ*/
     IEnumerator EnemyTurn()
     {
-
+    
         Debug.Log("エネミーターン");
         enemyTurnPanel.SetActive(true);
         yield return new WaitForSeconds(2);
         enemyTurnPanel.SetActive(false);
-        GiveOutCard(enemySampleDeck, enemyHand);
         StartCoroutine(TimeSetting());
+        yield return new WaitForSeconds(1);
+        CardDisplay[] enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
+        for(int i = 0; i < enemyFieldCardList.Length; i++){
+            enemyFieldCardList[i].canAttack = true;
+        }
+        GiveOutCard(enemySampleDeck, enemyHand);
+
+
+        // この辺に、敵がカードを場に出す処理を記述する
+        CardDisplay[] enemyHandCardList = enemyHand.GetComponentsInChildren<CardDisplay>();
+        
+        // コスト以下のカードであれば、カードをフィールドに出し続ける
+        while(Array.Exists(enemyHandCardList, card => card.initializeCardModel.cost <= enemyManaCost)){
+            // 条件に合うカードすべてを選択し、配列にぶっこむ
+            CardDisplay[] selectableHandCardList = Array.FindAll(enemyHandCardList, card => card.initializeCardModel.cost <= enemyManaCost);
+
+            // 今は、選択可能カードの配列先頭から順番に抽出することにする
+            if (selectableHandCardList.Length > 0) {
+                CardDisplay enemyCard = selectableHandCardList[0];
+                enemyCard.transform.SetParent(enemyField);
+                ReduceManaCost(enemyCard);
+                enemyHandCardList = enemyHand.GetComponentsInChildren<CardDisplay>();
+            }else{
+                break;
+            }
+
+
+        }
+
+        // 敵カードがplayerのカードに攻撃する
+        enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
+
+
+
+        Debug.Log("while前");
+        while(Array.Exists(enemyFieldCardList, card => card.canAttack)){
+            Debug.Log("while中");
+            // 攻撃可能カードの配列を取得
+            CardDisplay[] enemyCanAttackCardList = Array.FindAll(enemyFieldCardList, card => card.canAttack);
+            // 攻撃先（プレイヤーのフィールド）のカードを配列で取得
+            CardDisplay[] playerFieldCardList = playerField.GetComponentsInChildren<CardDisplay>();
+
+            CardDisplay attacker = enemyFieldCardList[0];
+
+            // 攻撃先（プレイヤーのフィールド）にカードがいる場合は、攻撃する。
+            if (playerFieldCardList.Length > 0){
+                Debug.Log("while中if中");
+
+                // defenderカード（攻撃対象のカード）を選択
+                CardDisplay defender = playerFieldCardList[0];
+
+                FightCard(attacker, defender);
+                yield return new WaitForSeconds(1);
+                enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
+
+
+            }
+
+            enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
+        }
+        yield return new WaitForSeconds(1);
+        SwitchTurn(turn);
     }
 
-    /*ターンごとに時間制限設けるよ*/
-    IEnumerator TimeSetting()
+/*ターンごとに時間制限設けるよ*/
+IEnumerator TimeSetting()
     {
 
-        int time = 5;
+        int time = 120;
         displayTimeCount.text = time.ToString();
 
         while (time >= 0)
@@ -152,6 +220,10 @@ public class GameManager : MonoBehaviour
     /*カード配るよ*/
     public void GiveOutCard(List<int> deck, Transform hand)
     {
+        Debug.Log("deckの要素数" + deck.Count);
+        if(deck.Count <= 0){
+            return;
+        }
         int cardId = deck[0];
         CardDisplay card = Instantiate(cardPrefab, hand, false);
         card.Initialize(cardId);
@@ -216,4 +288,29 @@ public class GameManager : MonoBehaviour
         }
         SwitchTurn(this.turn);
     }
+
+    public void FightCard(CardDisplay attacker, CardDisplay defender){
+        // attackerがdefenderに攻撃する
+        if (attacker.playerCard != defender.playerCard && attacker.canAttack)
+        {
+            defender.initializeCardModel.hp -= attacker.initializeCardModel.at;
+            // 反撃
+            attacker.initializeCardModel.hp -= defender.initializeCardModel.at;
+            attacker.canAttack = false;
+        }
+
+        // hp が0を下回ったらカードを殺す
+        if (attacker.initializeCardModel.hp <= 0)
+        {
+            attacker.initializeCardModel.isAlive = false;
+        }
+        if (defender.initializeCardModel.hp <= 0)
+        {
+            defender.initializeCardModel.isAlive = false;
+        }
+        attacker.CheckAlive();
+        defender.CheckAlive();
+    }
+
+
 }
