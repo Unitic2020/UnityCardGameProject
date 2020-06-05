@@ -110,73 +110,64 @@ public class GameManager : MonoBehaviour
     }
 
     /*敵のターンだよ*/
-    IEnumerator EnemyTurn()
-    {
-    
+    IEnumerator EnemyTurn() {
+
         Debug.Log("エネミーターン");
         enemyTurnPanel.SetActive(true);
         yield return new WaitForSeconds(2);
         enemyTurnPanel.SetActive(false);
         StartCoroutine(TimeSetting());
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         CardDisplay[] enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
-        for(int i = 0; i < enemyFieldCardList.Length; i++){
+        for(int i = 0;i < enemyFieldCardList.Length;i++) {
             enemyFieldCardList[i].canAttack = true;
         }
-        GiveOutCard(enemySampleDeck, enemyHand);
+        yield return new WaitForSeconds(2);
+        GiveOutCard(enemySampleDeck,enemyHand);
 
 
         // この辺に、敵がカードを場に出す処理を記述する
         CardDisplay[] enemyHandCardList = enemyHand.GetComponentsInChildren<CardDisplay>();
-        
+
         // コスト以下のカードであれば、カードをフィールドに出し続ける
-        while(Array.Exists(enemyHandCardList, card => card.initializeCardModel.cost <= enemyManaCost)){
+        while(Array.Exists(enemyHandCardList,card => card.initializeCardModel.cost <= enemyManaCost)) {
             // 条件に合うカードすべてを選択し、配列にぶっこむ
             CardDisplay[] selectableHandCardList = Array.FindAll(enemyHandCardList, card => card.initializeCardModel.cost <= enemyManaCost);
 
             // 今は、選択可能カードの配列先頭から順番に抽出することにする
-            if (selectableHandCardList.Length > 0) {
+            if(selectableHandCardList.Length > 0) {
                 CardDisplay enemyCard = selectableHandCardList[0];
                 enemyCard.transform.SetParent(enemyField);
                 ReduceManaCost(enemyCard);
                 enemyHandCardList = enemyHand.GetComponentsInChildren<CardDisplay>();
-            }else{
+            } else {
                 break;
             }
-
-
         }
 
         // 敵カードがplayerのカードに攻撃する
         enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
 
 
-
+        // 攻撃可能カードの配列を取得
+        CardDisplay[] enemyCanAttackCardList = Array.FindAll(enemyFieldCardList, card => card.canAttack);
+        // 攻撃先（プレイヤーのフィールド）のカードを配列で取得
+        CardDisplay[] playerFieldCardList = playerField.GetComponentsInChildren<CardDisplay>();
         Debug.Log("while前");
-        while(Array.Exists(enemyFieldCardList, card => card.canAttack)){
+        yield return new WaitForSeconds(5);
+        Debug.Log(enemyCanAttackCardList.Length);
+        while(enemyCanAttackCardList.Length > 0 && playerFieldCardList.Length > 0) {
             Debug.Log("while中");
-            // 攻撃可能カードの配列を取得
-            CardDisplay[] enemyCanAttackCardList = Array.FindAll(enemyFieldCardList, card => card.canAttack);
-            // 攻撃先（プレイヤーのフィールド）のカードを配列で取得
-            CardDisplay[] playerFieldCardList = playerField.GetComponentsInChildren<CardDisplay>();
-
-            CardDisplay attacker = enemyFieldCardList[0];
-
+            CardDisplay attacker = enemyCanAttackCardList[0];
             // 攻撃先（プレイヤーのフィールド）にカードがいる場合は、攻撃する。
-            if (playerFieldCardList.Length > 0){
                 Debug.Log("while中if中");
-
                 // defenderカード（攻撃対象のカード）を選択
                 CardDisplay defender = playerFieldCardList[0];
-
-                FightCard(attacker, defender);
+                FightCard(attacker,defender);
                 yield return new WaitForSeconds(1);
-                enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
-
-
-            }
-
+            playerFieldCardList = playerField.GetComponentsInChildren<CardDisplay>();
             enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
+            enemyCanAttackCardList = Array.FindAll(enemyFieldCardList,card => card.canAttack);
         }
         yield return new WaitForSeconds(1);
         SwitchTurn(turn);
