@@ -2220,6 +2220,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 922c6675d062fea4b9fbadacbca2b3b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyField: {fileID: 1720912623}
+  playerField: {fileID: 1779824472}
   cardPrefab: {fileID: 1533526656956555607, guid: c9dbb15713221414bb9aebb95732ce1a,
     type: 3}
   playerHand: {fileID: 924061452}

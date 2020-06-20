@@ -15,6 +15,8 @@ public class CardDisplay : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     [SerializeField] Text costText;
     [SerializeField] Image iconImage;
     public bool playerCard;
+    public bool canMoveToField;
+    public bool canAttack;
 
     public bool canDrag;
 
@@ -109,6 +111,19 @@ public class CardDisplay : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
         GameManager.gameManagerObject.displayNumberOfPlayerHandCard.text = "x" + GameManager.gameManagerObject.playerHandCardList.Length.ToString();
 
     }
+
+
+    // カードが生きているか確認して、死んでる場合はカードを破壊
+    public void CheckAlive()
+    {
+        if (initializeCardModel.isAlive){
+            hpText.text = initializeCardModel.hp.ToString();
+        }else{
+            Destroy(this.gameObject);
+        }
+    }
+
+
 
     void Start()
     {

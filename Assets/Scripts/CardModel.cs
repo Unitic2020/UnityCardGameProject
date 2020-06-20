@@ -8,6 +8,7 @@ public class CardModel {
     public int at;
     public int cost;
     public Sprite icon;
+    public bool isAlive = true;
 
     public CardModel(int cardId) {
 
