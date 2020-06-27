@@ -12,6 +12,7 @@ public class CardDisplay : MonoBehaviour {
     [SerializeField] Text atText;
     [SerializeField] Text costText;
     [SerializeField] Image iconImage;
+    [SerializeField] Text abilityText;
 
     public void Display(CardModel cardModel) {
 
@@ -20,6 +21,7 @@ public class CardDisplay : MonoBehaviour {
         atText.text = cardModel.at.ToString();
         costText.text = cardModel.cost.ToString();
         iconImage.sprite = cardModel.icon;
+        abilityText.text = cardModel.ability;
     }
 
     public void Initialize(int cardId) {
