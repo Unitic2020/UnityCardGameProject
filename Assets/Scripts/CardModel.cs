@@ -8,6 +8,7 @@ public class CardModel {
     public int at;
     public int cost;
     public Sprite icon;
+    public string ability;
     public bool isAlive = true;
 
     public CardModel(int cardId) {
@@ -18,6 +19,7 @@ public class CardModel {
         at = cardEntity.at;
         cost = cardEntity.cost;
         icon = cardEntity.icon;
+        ability = cardEntity.ability;
     }
 }
 

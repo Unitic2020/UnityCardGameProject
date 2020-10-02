@@ -11,5 +11,6 @@ public class CardEntity : ScriptableObject {
     public int at;
     public int cost;
     public Sprite icon;
+    public new string ability;
 }
 
