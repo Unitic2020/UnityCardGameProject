@@ -27,6 +27,10 @@ public class GameManager : MonoBehaviour
     public CardDisplay[] playerHandCardList;
     CardDisplay[] enemyHandCardList;
 
+    // HP初期値
+    int playerHp = 1;
+    int enemyHp = 1;
+
     public static GameManager instance;
     public bool turn; //true = player, false = enemy 
     public List<int> playerSampleDeck = new List<int>() { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
@@ -57,8 +61,8 @@ public class GameManager : MonoBehaviour
         enemyHandCardList = enemyHand.GetComponentsInChildren<CardDisplay>();
 
 
-        displayPlayerHp.text = 20.ToString();
-        displayEnemyHp.text = 20.ToString();
+        displayPlayerHp.text = "HP: " + this.playerHp.ToString();
+        displayEnemyHp.text = "HP: " + this.enemyHp.ToString();
         displayPlayerManaCost.text = defaultPlayerManaCost.ToString();
         displayEnemyManaCost.text = defaultEnemyManaCost.ToString();
         displayNumberOfPlayerHandCard.text = "x" + playerHandCardList.Length.ToString();
@@ -140,6 +144,7 @@ public class GameManager : MonoBehaviour
                 enemyCard.transform.SetParent(enemyField);
                 ReduceManaCost(enemyCard);
                 enemyHandCardList = enemyHand.GetComponentsInChildren<CardDisplay>();
+                this.displayNumberOfEnemyHandCard.text = "x" + enemyHandCardList.Length.ToString();
             } else {
                 break;
             }
@@ -168,6 +173,12 @@ public class GameManager : MonoBehaviour
             playerFieldCardList = playerField.GetComponentsInChildren<CardDisplay>();
             enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
             enemyCanAttackCardList = Array.FindAll(enemyFieldCardList,card => card.canAttack);
+        }
+        while(enemyCanAttackCardList.Length > 0){
+            yield return new WaitForSeconds(1);
+            this.AttackToHero(enemyCanAttackCardList[0], false);
+            this.UpdateHpText();
+            enemyCanAttackCardList = Array.FindAll(enemyFieldCardList, card => card.canAttack);
         }
         yield return new WaitForSeconds(1);
         SwitchTurn(turn);
@@ -303,5 +314,31 @@ IEnumerator TimeSetting()
         defender.CheckAlive();
     }
 
+    public void UpdateHpText(){
+        displayPlayerHp.text = "HP: " + this.playerHp.ToString();
+        displayEnemyHp.text = "HP: " + this.enemyHp.ToString();
+        displayEnemyHp.text = "HP: " + this.enemyHp.ToString();
+    }
 
+    public void CheckPlayerAlive(){
+        if (this.playerHp <= 0){
+            Debug.Log("Player Lose");
+            StopAllCoroutines();
+        }else if(this.enemyHp <=0) {
+            Debug.Log("Player Win!");
+            StopAllCoroutines();
+        }
+    }
+
+    // プレイヤーへの攻撃
+    public void AttackToHero(CardDisplay attacker, bool isPlayerCard){
+        if (isPlayerCard) {
+            this.enemyHp -= attacker.initializeCardModel.at;
+        } else {
+            this.playerHp -= attacker.initializeCardModel.at;
+        }
+        attacker.canAttack = false;
+        this.UpdateHpText();
+        this.CheckPlayerAlive();
+    }
 }
