@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using UnityEngine.SceneManagement;
 
 
 public class GameManager : MonoBehaviour
@@ -23,9 +24,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] Text displayNumberOfPlayerCardInGraveyard;
     [SerializeField] Text displayNumberOfEnemyHandCard;
     [SerializeField] Text displayNumberOfEnemyCardInGraveyard;
+    [SerializeField] GameObject winPanel;
+    [SerializeField] GameObject losePanel;
 
     public CardDisplay[] playerHandCardList;
     CardDisplay[] enemyHandCardList;
+
+    private bool IsPressed = false;
+
 
     // HP初期値
     int playerHp = 1;
@@ -322,9 +328,11 @@ IEnumerator TimeSetting()
 
     public void CheckPlayerAlive(){
         if (this.playerHp <= 0){
+            losePanel.SetActive(true);
             Debug.Log("Player Lose");
             StopAllCoroutines();
         }else if(this.enemyHp <=0) {
+            winPanel.SetActive(true);
             Debug.Log("Player Win!");
             StopAllCoroutines();
         }
