@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] Transform enemyField;
-    [SerializeField] Transform playerField;
+    [SerializeField] public Transform playerField;
     [SerializeField] public CardDisplay cardPrefab;
     public Transform playerHand;
     [SerializeField] Transform enemyHand;
@@ -29,13 +29,14 @@ public class GameManager : MonoBehaviour
 
     public CardDisplay[] playerHandCardList;
     CardDisplay[] enemyHandCardList;
+    public CardDisplay[] playerFieldCardList;
 
     private bool IsPressed = false;
 
 
     // HP初期値
-    int playerHp = 1;
-    int enemyHp = 1;
+    int playerHp = 10;
+    int enemyHp = 10;
 
     public static GameManager instance;
     public bool turn; //true = player, false = enemy 
@@ -78,8 +79,8 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < 4; i++)
         {
-            GiveOutCard(playerSampleDeck, playerHand);
-            GiveOutCard(enemySampleDeck, enemyHand);
+            StartCoroutine(GiveOutCard(playerSampleDeck, playerHand));
+            StartCoroutine(GiveOutCard(enemySampleDeck, enemyHand));
         }
 
         turn = true;
@@ -110,12 +111,12 @@ public class GameManager : MonoBehaviour
         yourTurnPanel.SetActive(true);
         yield return new WaitForSeconds(2);
         yourTurnPanel.SetActive(false);
-        CardDisplay[] playerFieldCardList = playerField.GetComponentsInChildren<CardDisplay>();
+        playerFieldCardList = playerField.GetComponentsInChildren<CardDisplay>();
         for (int i =0; i < playerFieldCardList.Length; i++){
             playerFieldCardList[i].canAttack = true;
         }
 
-        GiveOutCard(playerSampleDeck, playerHand);
+        StartCoroutine(GiveOutCard(playerSampleDeck, playerHand));
         StartCoroutine(TimeSetting());
     }
 
@@ -133,7 +134,7 @@ public class GameManager : MonoBehaviour
             enemyFieldCardList[i].canAttack = true;
         }
         yield return new WaitForSeconds(2);
-        GiveOutCard(enemySampleDeck,enemyHand);
+        StartCoroutine(GiveOutCard(enemySampleDeck,enemyHand));
 
 
         // この辺に、敵がカードを場に出す処理を記述する
@@ -143,14 +144,23 @@ public class GameManager : MonoBehaviour
         while(Array.Exists(enemyHandCardList,card => card.initializeCardModel.cost <= enemyManaCost)) {
             // 条件に合うカードすべてを選択し、配列にぶっこむ
             CardDisplay[] selectableHandCardList = Array.FindAll(enemyHandCardList, card => card.initializeCardModel.cost <= enemyManaCost);
+            enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
 
             // 今は、選択可能カードの配列先頭から順番に抽出することにする
-            if(selectableHandCardList.Length > 0) {
+            if (selectableHandCardList.Length > 0) {
                 CardDisplay enemyCard = selectableHandCardList[0];
-                enemyCard.transform.SetParent(enemyField);
-                ReduceManaCost(enemyCard);
-                enemyHandCardList = enemyHand.GetComponentsInChildren<CardDisplay>();
-                this.displayNumberOfEnemyHandCard.text = "x" + enemyHandCardList.Length.ToString();
+                if (enemyFieldCardList.Length < 5)
+                {
+                    enemyCard.transform.SetParent(enemyField);
+                    ReduceManaCost(enemyCard);
+                    enemyHandCardList = enemyHand.GetComponentsInChildren<CardDisplay>();
+                    this.displayNumberOfEnemyHandCard.text = "x" + enemyHandCardList.Length.ToString();
+                }
+                else
+                {
+                    break;
+                }
+                
             } else {
                 break;
             }
@@ -226,11 +236,24 @@ IEnumerator TimeSetting()
     }
 
     /*カード配るよ*/
-    public void GiveOutCard(List<int> deck, Transform hand)
+    IEnumerator GiveOutCard(List<int> deck, Transform hand)
     {
         Debug.Log("deckの要素数" + deck.Count);
         if(deck.Count <= 0){
-            return;
+            yield return new WaitForSeconds(1);
+            if(turn = true)
+            {
+                losePanel.SetActive(true);
+                Debug.Log("Player Lose");
+                StopAllCoroutines();
+            }
+            else
+            {
+                winPanel.SetActive(true);
+                Debug.Log("Player Win!");
+                StopAllCoroutines();
+            }
+            
         }
         int cardId = deck[0];
         CardDisplay card = Instantiate(cardPrefab, hand, false);
@@ -238,10 +261,22 @@ IEnumerator TimeSetting()
         if (hand == playerHand)
         {
             card.playerCard = true;
+            playerHandCardList = playerHand.GetComponentsInChildren<CardDisplay>();
+            if(playerHandCardList.Length > 7)
+            {
+                yield return new WaitForSeconds(1);
+                Destroy(card.gameObject);
+            }
         }
         else
         {
             card.playerCard = false;
+            enemyHandCardList = enemyHand.GetComponentsInChildren<CardDisplay>();
+            if (enemyHandCardList.Length > 7)
+            {
+                yield return new WaitForSeconds(1);
+                Destroy(card.gameObject);
+            }        
         }
         deck.RemoveAt(0);
 

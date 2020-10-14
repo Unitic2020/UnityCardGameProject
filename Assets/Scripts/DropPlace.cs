@@ -31,10 +31,15 @@ public class DropPlace : MonoBehaviour, IDropHandler
         // GameObjectにしてやる。
         if (card.canDrag)
         {
-            Debug.Log("親が変われ！");
-            card.defaultParent = this.transform;
+            GameManager.gameManagerObject.playerFieldCardList = GameManager.gameManagerObject.playerField.GetComponentsInChildren<CardDisplay>();
+            if (GameManager.gameManagerObject.playerFieldCardList.Length <5)
+            {
+                Debug.Log("親が変われ！");
+                card.defaultParent = this.transform;
 
-            GameManager.gameManagerObject.ReduceManaCost(card);
+                GameManager.gameManagerObject.ReduceManaCost(card);
+            }
+          
         }
     }
 }
