@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CardModel {
     public string name;
+    public int id;
     public int hp;
     public int at;
     public int cost;
@@ -15,6 +16,7 @@ public class CardModel {
 
         CardEntity cardEntity = Resources.Load<CardEntity>("CardList/Card" + cardId);
         name = cardEntity.name;
+        id = cardEntity.id;
         hp = cardEntity.hp;
         at = cardEntity.at;
         cost = cardEntity.cost;
