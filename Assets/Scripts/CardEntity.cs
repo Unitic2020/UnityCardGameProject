@@ -7,6 +7,7 @@ using UnityEngine;
 public class CardEntity : ScriptableObject {
 
     public new string name;
+    public int id;
     public int hp;
     public int at;
     public int cost;
