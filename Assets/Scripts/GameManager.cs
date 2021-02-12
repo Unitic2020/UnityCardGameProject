@@ -8,21 +8,21 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] Transform enemyField;
+    [SerializeField] public Transform enemyField;
     [SerializeField] public Transform playerField;
     [SerializeField] public CardDisplay cardPrefab;
     public Transform playerHand;
-    [SerializeField] Transform enemyHand;
+    [SerializeField] public Transform enemyHand;
     [SerializeField] GameObject yourTurnPanel;
-    [SerializeField] GameObject enemyTurnPanel;
+    [SerializeField] public GameObject enemyTurnPanel;
     [SerializeField] Text displayTimeCount;
     [SerializeField] Text displayPlayerHp;
-    [SerializeField] Text displayEnemyHp;
+    [SerializeField] public Text displayEnemyHp;
     [SerializeField] Text displayPlayerManaCost;
-    [SerializeField] Text displayEnemyManaCost;
+    [SerializeField] public Text displayEnemyManaCost;
     public Text displayNumberOfPlayerHandCard;
     [SerializeField] Text displayNumberOfPlayerCardInGraveyard;
-    [SerializeField] Text displayNumberOfEnemyHandCard;
+    [SerializeField] public Text displayNumberOfEnemyHandCard;
     [SerializeField] Text displayNumberOfEnemyCardInGraveyard;
     [SerializeField] GameObject winPanel;
     [SerializeField] GameObject losePanel;
@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
 
     // HP初期値
     int playerHp = 10;
-    int enemyHp = 10;
+    public int enemyHp = 10;
 
     public static GameManager instance;
     public bool turn; //true = player, false = enemy 
@@ -47,10 +47,17 @@ public class GameManager : MonoBehaviour
     int defaultEnemyManaCost = 0;
     // 実際のマナコスト
     public int playerManaCost;
-    int enemyManaCost;
+    public int enemyManaCost;
 
     // 他クラスでもGameManagerのオブジェクトを参照できるように、GameManagerのオブジェクトを、staticで宣言。
     public static GameManager gameManagerObject;
+
+    // プレイヤーターンを制御するクラス
+    GameObject playerTurn;
+    PlayerTurn playerTurnScript;
+
+    GameObject enemyTurn;
+    EnemyTurn enemyTurnScript;
 
     void Awake()
     {
@@ -62,6 +69,13 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        // PlayerTurnのGameObjectに属するScriptを読み込む
+        playerTurn = GameObject.Find("PlayerTurn");
+        playerTurnScript = playerTurn.GetComponent<PlayerTurn>();
+
+        // EnemyTurnのGameObjectに属するScript読み込む
+        enemyTurn = GameObject.Find("EnemyTurn");
+        enemyTurnScript = enemyTurn.GetComponent<EnemyTurn>();
 
         // プレイヤーと敵のそれぞれの手札にあるカードの枚数を取得する
         playerHandCardList = playerHand.GetComponentsInChildren<CardDisplay>();
@@ -85,123 +99,27 @@ public class GameManager : MonoBehaviour
 
         turn = true;
 
+        playerTurnScript.CreateCoroutineMethod(yourTurnPanel, playerFieldCardList, playerField, playerSampleDeck, playerHand);
+        enemyTurnScript.CreateCoroutineMethod();
+
         if (turn)
         {
             defaultPlayerManaCost += 1;
             playerManaCost = defaultPlayerManaCost;
             displayPlayerManaCost.text = playerManaCost.ToString();
-            StartCoroutine(PlayerTurn());
+            playerTurnScript.RunPlayerTurnCoroutine();
         }
         else
         {
             defaultEnemyManaCost += 1;
             enemyManaCost = defaultEnemyManaCost;
             displayEnemyManaCost.text = enemyManaCost.ToString();
-            StartCoroutine(EnemyTurn());
+            enemyTurnScript.RunEnemyTurnCoroutine();
         }
-    }
-
-
-
-    /*プレイヤーのターンだよ*/
-    IEnumerator PlayerTurn()
-    {
-
-        Debug.Log("プレイヤーターン");
-        yourTurnPanel.SetActive(true);
-        yield return new WaitForSeconds(2);
-        yourTurnPanel.SetActive(false);
-        playerFieldCardList = playerField.GetComponentsInChildren<CardDisplay>();
-        for (int i =0; i < playerFieldCardList.Length; i++){
-            playerFieldCardList[i].canAttack = true;
-        }
-
-        StartCoroutine(GiveOutCard(playerSampleDeck, playerHand));
-        StartCoroutine(TimeSetting());
-    }
-
-    /*敵のターンだよ*/
-    IEnumerator EnemyTurn() {
-
-        Debug.Log("エネミーターン");
-        enemyTurnPanel.SetActive(true);
-        yield return new WaitForSeconds(2);
-        enemyTurnPanel.SetActive(false);
-        StartCoroutine(TimeSetting());
-        yield return new WaitForSeconds(2);
-        CardDisplay[] enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
-        for(int i = 0;i < enemyFieldCardList.Length;i++) {
-            enemyFieldCardList[i].canAttack = true;
-        }
-        yield return new WaitForSeconds(2);
-        StartCoroutine(GiveOutCard(enemySampleDeck,enemyHand));
-
-
-        // この辺に、敵がカードを場に出す処理を記述する
-        CardDisplay[] enemyHandCardList = enemyHand.GetComponentsInChildren<CardDisplay>();
-
-        // コスト以下のカードであれば、カードをフィールドに出し続ける
-        while(Array.Exists(enemyHandCardList,card => card.initializeCardModel.cost <= enemyManaCost)) {
-            // 条件に合うカードすべてを選択し、配列にぶっこむ
-            CardDisplay[] selectableHandCardList = Array.FindAll(enemyHandCardList, card => card.initializeCardModel.cost <= enemyManaCost);
-            enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
-
-            // 今は、選択可能カードの配列先頭から順番に抽出することにする
-            if (selectableHandCardList.Length > 0) {
-                CardDisplay enemyCard = selectableHandCardList[0];
-                if (enemyFieldCardList.Length < 5)
-                {
-                    enemyCard.transform.SetParent(enemyField);
-                    ReduceManaCost(enemyCard);
-                    enemyHandCardList = enemyHand.GetComponentsInChildren<CardDisplay>();
-                    this.displayNumberOfEnemyHandCard.text = "x" + enemyHandCardList.Length.ToString();
-                }
-                else
-                {
-                    break;
-                }
-                
-            } else {
-                break;
-            }
-        }
-
-        // 敵カードがplayerのカードに攻撃する
-        enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
-
-
-        // 攻撃可能カードの配列を取得
-        CardDisplay[] enemyCanAttackCardList = Array.FindAll(enemyFieldCardList, card => card.canAttack);
-        // 攻撃先（プレイヤーのフィールド）のカードを配列で取得
-        CardDisplay[] playerFieldCardList = playerField.GetComponentsInChildren<CardDisplay>();
-        Debug.Log("while前");
-        yield return new WaitForSeconds(5);
-        Debug.Log(enemyCanAttackCardList.Length);
-        while(enemyCanAttackCardList.Length > 0 && playerFieldCardList.Length > 0) {
-            Debug.Log("while中");
-            CardDisplay attacker = enemyCanAttackCardList[0];
-            // 攻撃先（プレイヤーのフィールド）にカードがいる場合は、攻撃する。
-                Debug.Log("while中if中");
-                // defenderカード（攻撃対象のカード）を選択
-                CardDisplay defender = playerFieldCardList[0];
-                FightCard(attacker,defender);
-                yield return new WaitForSeconds(1);
-            playerFieldCardList = playerField.GetComponentsInChildren<CardDisplay>();
-            enemyFieldCardList = enemyField.GetComponentsInChildren<CardDisplay>();
-            enemyCanAttackCardList = Array.FindAll(enemyFieldCardList,card => card.canAttack);
-        }
-        while(enemyCanAttackCardList.Length > 0){
-            yield return new WaitForSeconds(1);
-            this.AttackToHero(enemyCanAttackCardList[0], false);
-            this.UpdateHpText();
-            enemyCanAttackCardList = Array.FindAll(enemyFieldCardList, card => card.canAttack);
-        }
-        yield return new WaitForSeconds(1);
-        SwitchTurn(turn);
     }
 
 /*ターンごとに時間制限設けるよ*/
-IEnumerator TimeSetting()
+public IEnumerator TimeSetting()
     {
 
         int time = 120;
@@ -219,24 +137,30 @@ IEnumerator TimeSetting()
 
     public void SwitchTurn(bool isTurn)
     {
+        
+
 
         turn = !isTurn;
         if (turn)
         {
             StopAllCoroutines();
-            StartCoroutine(PlayerTurn());
+            enemyTurnScript.StopEnemyTurnCoroutine();
+            playerTurnScript.CreateCoroutineMethod(yourTurnPanel, playerFieldCardList, playerField, playerSampleDeck, playerHand);
+            playerTurnScript.RunPlayerTurnCoroutine();
         }
         else
         {
             StopAllCoroutines();
-            StartCoroutine(EnemyTurn());
+            playerTurnScript.StopPlayerTurnCoroutine();
+            enemyTurnScript.CreateCoroutineMethod();
+            enemyTurnScript.RunEnemyTurnCoroutine();
         }
         IncreaseManaCost(turn);
 
     }
 
     /*カード配るよ*/
-    IEnumerator GiveOutCard(List<int> deck, Transform hand)
+    public IEnumerator GiveOutCard(List<int> deck, Transform hand)
     {
         Debug.Log("deckの要素数" + deck.Count);
         if(deck.Count <= 0){
@@ -366,10 +290,14 @@ IEnumerator TimeSetting()
             losePanel.SetActive(true);
             Debug.Log("Player Lose");
             StopAllCoroutines();
+            playerTurnScript.StopPlayerTurnCoroutine();
+            enemyTurnScript.StopEnemyTurnCoroutine();
         }else if(this.enemyHp <=0) {
             winPanel.SetActive(true);
             Debug.Log("Player Win!");
             StopAllCoroutines();
+            playerTurnScript.StopPlayerTurnCoroutine();
+            enemyTurnScript.StopEnemyTurnCoroutine();
         }
     }
 
