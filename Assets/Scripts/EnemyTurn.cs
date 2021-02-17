@@ -4,8 +4,19 @@ using System;
 public class EnemyTurn : MonoBehaviour
 {
     GameObject gameManager;
-
     GameManager gameManagerScript;
+
+    GameObject attack;
+    Attack attackScript;
+
+    GameObject manaManager;
+    ManaManager manaManagerScript;
+
+    GameObject gameSystem;
+    GameSystem gameSystemScript;
+
+    GameObject cardManager;
+    CardManager cardManagerScript;
 
     IEnumerator enemyTurnCoroutine;
 
@@ -14,6 +25,18 @@ public class EnemyTurn : MonoBehaviour
     {
         gameManager = GameObject.Find("GameManager");
         gameManagerScript = gameManager.GetComponent<GameManager>();
+
+        attack = GameObject.Find("Attack");
+        attackScript = attack.GetComponent<Attack>();
+
+        manaManager = GameObject.Find("ManaManager");
+        manaManagerScript = manaManager.GetComponent<ManaManager>();
+
+        gameSystem = GameObject.Find("GameSystem");
+        gameSystemScript = gameSystem.GetComponent<GameSystem>();
+
+        cardManager = GameObject.Find("CardManager");
+        cardManagerScript = cardManager.GetComponent<CardManager>();
     }
 
     public void CreateCoroutineMethod()
@@ -29,7 +52,7 @@ public class EnemyTurn : MonoBehaviour
         gameManagerScript.enemyTurnPanel.SetActive(true);
         yield return new WaitForSeconds(2);
         gameManagerScript.enemyTurnPanel.SetActive(false);
-        StartCoroutine(gameManagerScript.TimeSetting());
+        StartCoroutine(gameSystemScript.TimeSetting());
         yield return new WaitForSeconds(2);
         CardDisplay[] enemyFieldCardList = gameManagerScript.enemyField.GetComponentsInChildren<CardDisplay>();
         for (int i = 0; i < enemyFieldCardList.Length; i++)
@@ -37,7 +60,7 @@ public class EnemyTurn : MonoBehaviour
             enemyFieldCardList[i].canAttack = true;
         }
         yield return new WaitForSeconds(2);
-        StartCoroutine(gameManagerScript.GiveOutCard(gameManagerScript.enemySampleDeck, gameManagerScript.enemyHand));
+        StartCoroutine(cardManagerScript.GiveOutCard(gameManagerScript.enemySampleDeck, gameManagerScript.enemyHand));
 
 
         // この辺に、敵がカードを場に出す処理を記述する
@@ -57,7 +80,7 @@ public class EnemyTurn : MonoBehaviour
                 if (enemyFieldCardList.Length < 5)
                 {
                     enemyCard.transform.SetParent(gameManagerScript.enemyField);
-                    gameManagerScript.ReduceManaCost(enemyCard);
+                    manaManagerScript.ReduceManaCost(enemyCard);
                     enemyHandCardList = gameManagerScript.enemyHand.GetComponentsInChildren<CardDisplay>();
                     gameManagerScript.displayNumberOfEnemyHandCard.text = "x" + enemyHandCardList.Length.ToString();
                 }
@@ -92,7 +115,7 @@ public class EnemyTurn : MonoBehaviour
             Debug.Log("while中if中");
             // defenderカード（攻撃対象のカード）を選択
             CardDisplay defender = playerFieldCardList[0];
-            gameManagerScript.FightCard(attacker, defender);
+            attackScript.FightCard(attacker, defender);
             yield return new WaitForSeconds(1);
             playerFieldCardList = gameManagerScript.playerField.GetComponentsInChildren<CardDisplay>();
             enemyFieldCardList = gameManagerScript.enemyField.GetComponentsInChildren<CardDisplay>();
@@ -101,12 +124,12 @@ public class EnemyTurn : MonoBehaviour
         while (enemyCanAttackCardList.Length > 0)
         {
             yield return new WaitForSeconds(1);
-            gameManagerScript.AttackToHero(enemyCanAttackCardList[0], false);
-            gameManagerScript.UpdateHpText();
+            attackScript.AttackToHero(enemyCanAttackCardList[0], false);
+            gameSystemScript.UpdateHpText();
             enemyCanAttackCardList = Array.FindAll(enemyFieldCardList, card => card.canAttack);
         }
         yield return new WaitForSeconds(1);
-        gameManagerScript.SwitchTurn(gameManagerScript.turn);
+        gameSystemScript.SwitchTurn(gameManagerScript.turn);
     }
 
     public void RunEnemyTurnCoroutine()

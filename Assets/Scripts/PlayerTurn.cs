@@ -5,8 +5,13 @@ using UnityEngine;
 public class PlayerTurn : MonoBehaviour
 {
     GameObject gameManager;
-
     GameManager gameManagerScript;
+
+    GameObject gameSystem;
+    GameSystem gameSystemScript;
+
+    GameObject cardManager;
+    CardManager cardManagerScript;
 
     IEnumerator playerTurnCoroutine;
 
@@ -14,6 +19,12 @@ public class PlayerTurn : MonoBehaviour
     {
         gameManager = GameObject.Find("GameManager");
         gameManagerScript = gameManager.GetComponent<GameManager>();
+
+        gameSystem = GameObject.Find("GameSystem");
+        gameSystemScript = gameSystem.GetComponent<GameSystem>();
+
+        cardManager = GameObject.Find("CardManager");
+        cardManagerScript = cardManager.GetComponent<CardManager>();
     }
 
     public void CreateCoroutineMethod(GameObject yourTurnPanel, CardDisplay[] playerFieldCardList, Transform playerField, List<int> playerSampleDeck, Transform playerHand)
@@ -36,8 +47,8 @@ public class PlayerTurn : MonoBehaviour
             playerFieldCardList[i].canAttack = true;
         }
 
-        StartCoroutine(gameManagerScript.GiveOutCard(playerSampleDeck, playerHand));
-        StartCoroutine(gameManagerScript.TimeSetting());
+        StartCoroutine(cardManagerScript.GiveOutCard(playerSampleDeck, playerHand));
+        StartCoroutine(gameSystemScript.TimeSetting());
     }
 
     public void RunPlayerTurnCoroutine()

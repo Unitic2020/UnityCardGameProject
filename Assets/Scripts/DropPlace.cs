@@ -5,12 +5,23 @@ using UnityEngine.EventSystems;
 
 public class DropPlace : MonoBehaviour, IDropHandler
 {
+
+    GameObject manaManager;
+    ManaManager manaManagerScript;
+
     public enum TYPE
     {
         HAND,
         FIELD
     }
     public TYPE type;
+
+    void Start()
+    {
+        manaManager = GameObject.Find("ManaManager");
+        manaManagerScript = manaManager.GetComponent<ManaManager>();
+    }
+
     public void OnDrop(PointerEventData eventData)
     {
 
@@ -37,7 +48,7 @@ public class DropPlace : MonoBehaviour, IDropHandler
                 Debug.Log("親が変われ！");
                 card.defaultParent = this.transform;
 
-                GameManager.gameManagerObject.ReduceManaCost(card);
+                manaManagerScript.ReduceManaCost(card);
             }
           
         }
