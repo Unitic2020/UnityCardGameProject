@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -15,12 +13,6 @@ public class RuleSceneScript : MonoBehaviour
     void Start()
     {
         LoadRuleText();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     // Assets内のテキストファイルから、ルール説明のテキストを読み出す機能
