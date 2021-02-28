@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SelectDeckBeforeBattle.unity
     guid: 302ca626fe7b19f488724d54f47b967c
+  - enabled: 1
+    path: Assets/Scenes/Rule.unity
+    guid: 15d5161f1c32f6e4498f1bbec24a1de8
   m_configObjects: {}
