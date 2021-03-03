@@ -37,6 +37,15 @@ public class DropPlace : MonoBehaviour, IDropHandler
             return;
         }
 
+        Debug.Log("カードの親: " + card.transform.parent);
+        Debug.Log("自分: " + this.transform);
+
+        // 同じところに戻しても処理が中断される様にする。
+        if (card.previousParent == this.transform)
+        {
+            return;
+        }
+
         //落としてくるカードがないときは処理中断する
         // 落としてきたカードの親を、このスクリプトがアタッチされている
         // GameObjectにしてやる。
