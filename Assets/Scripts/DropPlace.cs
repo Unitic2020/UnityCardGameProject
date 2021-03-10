@@ -5,12 +5,23 @@ using UnityEngine.EventSystems;
 
 public class DropPlace : MonoBehaviour, IDropHandler
 {
+
+    GameObject manaManager;
+    ManaManager manaManagerScript;
+
     public enum TYPE
     {
         HAND,
         FIELD
     }
     public TYPE type;
+
+    void Start()
+    {
+        manaManager = GameObject.Find("ManaManager");
+        manaManagerScript = manaManager.GetComponent<ManaManager>();
+    }
+
     public void OnDrop(PointerEventData eventData)
     {
 
@@ -26,6 +37,15 @@ public class DropPlace : MonoBehaviour, IDropHandler
             return;
         }
 
+        Debug.Log("カードの親: " + card.transform.parent);
+        Debug.Log("自分: " + this.transform);
+
+        // 同じところに戻しても処理が中断される様にする。
+        if (card.previousParent == this.transform)
+        {
+            return;
+        }
+
         //落としてくるカードがないときは処理中断する
         // 落としてきたカードの親を、このスクリプトがアタッチされている
         // GameObjectにしてやる。
@@ -37,7 +57,7 @@ public class DropPlace : MonoBehaviour, IDropHandler
                 Debug.Log("親が変われ！");
                 card.defaultParent = this.transform;
 
-                GameManager.gameManagerObject.ReduceManaCost(card);
+                manaManagerScript.ReduceManaCost(card);
             }
           
         }

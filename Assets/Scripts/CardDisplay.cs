@@ -14,6 +14,7 @@ public class CardDisplay : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     [SerializeField] Text atText;
     [SerializeField] Text costText;
     [SerializeField] Image iconImage;
+    public Transform previousParent;    // ドラッグ前の親Transformを記録するメンバ
     public bool playerCard;
     public bool canMoveToField;
     public bool canAttack;
@@ -54,7 +55,7 @@ public class CardDisplay : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
             canDrag = false;
         }
 
-        if (card.initializeCardModel.cost > GameManager.gameManagerObject.playerManaCost)
+        if ((card.initializeCardModel.cost > GameManager.gameManagerObject.playerManaCost) && transform.parent != GameManager.gameManagerObject.playerField)
         {
             canDrag = false;
         }
@@ -64,10 +65,16 @@ public class CardDisplay : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
             canDrag = false;
         }
 
+        if(!canAttack && transform.parent == GameManager.gameManagerObject.playerField)
+        {
+            canDrag = false;
+        }
+
         if (!canDrag)
         {
             return;
         }
+        previousParent = transform.parent;
         defaultParent = transform.parent;
         transform.SetParent(defaultParent.parent, false);
         GetComponent<CanvasGroup>().blocksRaycasts = false;
