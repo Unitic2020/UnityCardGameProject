@@ -183,11 +183,13 @@ public class ListManager : MonoBehaviour{
 
         if (CList.Count == saveCard.Count) {//応急処置
 
+
             referenceCard.Sort((a, b) => a.id - b.id);//Listのソート
 
             for (int i = 0; i < saveCard.Count; i++) {//現在表示されているカードの削除
                 Destroy(saveCard[i]);
             }
+            saveCard.Clear();//危険なdestroy clear
 
             for (int i = 0; i < CList.Count; i++) {//inListが動的に生成されるのでCountが使えない。idがかぶることはないのでClistと同じ数だしええやろ
 
@@ -206,14 +208,15 @@ public class ListManager : MonoBehaviour{
     }
 
     public void sortHP() {//配列の中のhpを並べ替える
-
+        
         if (CList.Count == saveCard.Count) {//応急処置
-           
+
             referenceCard.Sort((a, b) => a.hp - b.hp);//Listのソート
 
             for (int i = 0; i < saveCard.Count; i++) {//現在表示されているカードの削除
                 Destroy(saveCard[i]);
             }
+            saveCard.Clear();//危険なdestroy clear
 
             for (int i = 0; i < CList.Count; i++) {//inListが動的に生成されるのでCountが使えない。idがかぶることはないのでClistと同じ数だしええやろ
 
@@ -241,6 +244,7 @@ public class ListManager : MonoBehaviour{
             for (int i = 0; i < saveCard.Count; i++) {//現在表示されているカードの削除
                 Destroy(saveCard[i]);
             }
+            saveCard.Clear();//危険なdestroy clear
 
             for (int i = 0; i < CList.Count; i++) {//inListが動的に生成されるのでCountが使えない。idがかぶることはないのでClistと同じ数だしええやろ
 
