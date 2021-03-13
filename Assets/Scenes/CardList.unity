@@ -670,7 +670,7 @@ GameObject:
   - component: {fileID: 403196036}
   - component: {fileID: 403196035}
   m_Layer: 5
-  m_Name: SortButton
+  m_Name: IDSortButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
