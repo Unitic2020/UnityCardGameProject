@@ -23,7 +23,7 @@ public class ListManager : MonoBehaviour{
     [SerializeField] private Text inputText;
 
     private bool isDetail = false;
-    private List<int> CList = new List<int>() { 5,2,4,3,1};//中身を絶対に変更しない
+    private List<int> CList = new List<int>() { 1 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,9 ,10 ,11 ,12 ,13 ,14 ,15};//中身を絶対に変更しない
     private List<CardModel> referenceCard = new List<CardModel>();//idとかを参照する用
     private List<GameObject> saveCard = new List<GameObject>();//ゲームに表示する用
 

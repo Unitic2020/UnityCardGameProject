@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0823d7a24e6da9d41938f4105b59e6aa, type: 3}
-  m_Name: Card3
+  m_Name: Card12
   m_EditorClassIdentifier: 
-  name: c
-  id: 3
-  hp: 54
-  at: 17
-  cost: 6
-  icon: {fileID: 21300000, guid: 55b72619ef708a7408091b3777dff449, type: 3}
-  ability: c
+  name: l
+  id: 12
+  hp: 64
+  at: 12
+  cost: 8
+  icon: {fileID: 21300000, guid: 0e7facaa30fdbc94aaedb385f2fa8935, type: 3}
+  ability: l
