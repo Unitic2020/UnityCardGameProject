@@ -28,12 +28,15 @@ public class ListManager : MonoBehaviour{
     private List<GameObject> saveCard = new List<GameObject>();//ゲームに表示する用
 
     void Start() {
-
+       
         inputField = inputField.GetComponent<InputField>();
         inputText = inputText.GetComponent<Text>();
 
         CardList(CList);
-        
+
+        for (int i = 0; i < CList.Count; i++) {
+            saveCard[i].GetComponent<AttackedCard>().enabled = false;
+        }
     }
 
     public void InputText() {//文字が更新(入力・削除)されるたびに呼び出される
