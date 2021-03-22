@@ -88,6 +88,11 @@ public class ListManager : MonoBehaviour{
                 saveCard.Add(card);
             }
 
+            for (int i = 0; i < searchList.Count; i++) {
+                saveCard[i].GetComponent<AttackedCard>().enabled = false;
+            }
+
+
         } else {//検索欄に入力がなくなったら元に戻す
 
             Debug.Log("空白daよ");
@@ -103,6 +108,11 @@ public class ListManager : MonoBehaviour{
 
                 saveCard.Add(card);
             }
+
+            for (int i = 0; i < CList.Count; i++) {
+                saveCard[i].GetComponent<AttackedCard>().enabled = false;
+            }
+
         }
 
         inputField.text = "";
@@ -207,6 +217,11 @@ public class ListManager : MonoBehaviour{
                 saveCard.Add(card);
 
             }
+
+            for (int i = 0; i < CList.Count; i++) {
+                saveCard[i].GetComponent<AttackedCard>().enabled = false;
+            }
+
         }
     }
 
@@ -234,6 +249,11 @@ public class ListManager : MonoBehaviour{
                 saveCard.Add(card);
 
             }
+
+            for (int i = 0; i < CList.Count; i++) {
+                saveCard[i].GetComponent<AttackedCard>().enabled = false;
+            }
+
         }
        
     }
@@ -262,6 +282,11 @@ public class ListManager : MonoBehaviour{
                 saveCard.Add(card);
 
             }
+
+            for (int i = 0; i < CList.Count; i++) {
+                saveCard[i].GetComponent<AttackedCard>().enabled = false;
+            }
+
         }
     }
 
