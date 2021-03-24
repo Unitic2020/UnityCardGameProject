@@ -23,17 +23,20 @@ public class ListManager : MonoBehaviour{
     [SerializeField] private Text inputText;
 
     private bool isDetail = false;
-    private List<int> CList = new List<int>() { 5,2,4,3,1};//中身を絶対に変更しない
+    private List<int> CList = new List<int>() { 1 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,9 ,10 ,11 ,12 ,13 ,14 ,15};//中身を絶対に変更しない
     private List<CardModel> referenceCard = new List<CardModel>();//idとかを参照する用
     private List<GameObject> saveCard = new List<GameObject>();//ゲームに表示する用
 
     void Start() {
-
+       
         inputField = inputField.GetComponent<InputField>();
         inputText = inputText.GetComponent<Text>();
 
         CardList(CList);
-        
+
+        for (int i = 0; i < CList.Count; i++) {
+            saveCard[i].GetComponent<AttackedCard>().enabled = false;
+        }
     }
 
     public void InputText() {//文字が更新(入力・削除)されるたびに呼び出される
@@ -85,6 +88,11 @@ public class ListManager : MonoBehaviour{
                 saveCard.Add(card);
             }
 
+            for (int i = 0; i < searchList.Count; i++) {
+                saveCard[i].GetComponent<AttackedCard>().enabled = false;
+            }
+
+
         } else {//検索欄に入力がなくなったら元に戻す
 
             Debug.Log("空白daよ");
@@ -100,6 +108,11 @@ public class ListManager : MonoBehaviour{
 
                 saveCard.Add(card);
             }
+
+            for (int i = 0; i < CList.Count; i++) {
+                saveCard[i].GetComponent<AttackedCard>().enabled = false;
+            }
+
         }
 
         inputField.text = "";
@@ -204,6 +217,11 @@ public class ListManager : MonoBehaviour{
                 saveCard.Add(card);
 
             }
+
+            for (int i = 0; i < CList.Count; i++) {
+                saveCard[i].GetComponent<AttackedCard>().enabled = false;
+            }
+
         }
     }
 
@@ -231,6 +249,11 @@ public class ListManager : MonoBehaviour{
                 saveCard.Add(card);
 
             }
+
+            for (int i = 0; i < CList.Count; i++) {
+                saveCard[i].GetComponent<AttackedCard>().enabled = false;
+            }
+
         }
        
     }
@@ -259,6 +282,11 @@ public class ListManager : MonoBehaviour{
                 saveCard.Add(card);
 
             }
+
+            for (int i = 0; i < CList.Count; i++) {
+                saveCard[i].GetComponent<AttackedCard>().enabled = false;
+            }
+
         }
     }
 
