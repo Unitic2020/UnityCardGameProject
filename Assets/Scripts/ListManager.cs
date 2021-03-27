@@ -16,6 +16,9 @@ public class ListManager : MonoBehaviour{
     [SerializeField] private Text abilityText;
     [SerializeField] Transform listPanel;
     [SerializeField] GameObject detailPanel;
+    [SerializeField] private Text pageText;
+    [SerializeField] private Image nextPageButton;
+    [SerializeField] private Image prePageButton;
 
     CardModel cardModel;
 
@@ -23,9 +26,14 @@ public class ListManager : MonoBehaviour{
     [SerializeField] private Text inputText;
 
     private bool isDetail = false;
-    private List<int> CList = new List<int>() { 1 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,9 ,10 ,11 ,12 ,13 ,14 ,15};//中身を絶対に変更しない
+    private bool isSearch = false;//検索している状態かどうか
+
+    private List<int> CList = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };//中身を絶対に変更しない
     private List<CardModel> referenceCard = new List<CardModel>();//idとかを参照する用
     private List<GameObject> saveCard = new List<GameObject>();//ゲームに表示する用
+
+    private int pageNumber = 1;//ページ番号
+    private const int MaxpageNumber = 14;//ページにい表示できるmaxの数
 
     void Start() {
        
@@ -34,9 +42,27 @@ public class ListManager : MonoBehaviour{
 
         CardList(CList);
 
-        for (int i = 0; i < CList.Count; i++) {
+        for (int i = 0; i < saveCard.Count; i++) {
             saveCard[i].GetComponent<AttackedCard>().enabled = false;
         }
+    }
+
+    private void Update() {
+
+        pageText.text = "-" + pageNumber + "-";//pageNumberの更新
+
+        if (pageNumber >= CList.Count / MaxpageNumber + 1 || isSearch) {//NextButtomの色の変化を監視
+            nextPageButton.color = new Color(0.5f, 0.5f, 0.5f);
+        } else {
+            nextPageButton.color = new Color(1.0f, 1.0f, 1.0f);
+        }
+
+        if (pageNumber == 1) {//PreButtomの色の変化を監視
+            prePageButton.color = new Color(0.5f, 0.5f, 0.5f);
+        } else {
+            prePageButton.color = new Color(1.0f, 1.0f, 1.0f);
+        }
+
     }
 
     public void InputText() {//文字が更新(入力・削除)されるたびに呼び出される
@@ -55,12 +81,13 @@ public class ListManager : MonoBehaviour{
 
             if (inputText.text == referenceCard[i].name) {
                 if (!searchList.Contains(referenceCard[i].id)) {
-                    Debug.Log("dainyu");
                     searchList.Add(referenceCard[i].id);
                 }            
              }
         }
-        
+
+        pageNumber = searchList.Count / MaxpageNumber + 1;
+
         /*
          * 動きがよくわかってなくて怪しい。でも動く
          */
@@ -73,9 +100,7 @@ public class ListManager : MonoBehaviour{
 
         if (inputText.text != "") {//検索に引っ掛かったカードのidをもとに生成
 
-            Debug.Log("空白じゃないよ");
-
-            for (int i = 0; i < searchList.Count; i++) {
+            for (int i = (pageNumber - 1) * MaxpageNumber; i < pageNumber * MaxpageNumber && i < searchList.Count; i++) {
                
                 cardDisplayPrefab.Initialize(searchList[i]);
 
@@ -88,14 +113,13 @@ public class ListManager : MonoBehaviour{
                 saveCard.Add(card);
             }
 
-            for (int i = 0; i < searchList.Count; i++) {
+            for (int i = 0; i < saveCard.Count; i++) {
                 saveCard[i].GetComponent<AttackedCard>().enabled = false;
             }
 
 
-        } else {//検索欄に入力がなくなったら元に戻す
-
-            Debug.Log("空白daよ");
+        }
+        /*else {//検索欄に入力がなくなったら元に戻す
 
             for (int i = 0; i < CList.Count; i++) {//検索に引っ掛かったカードのidをもとに生成
                 cardDisplayPrefab.Initialize(CList[i]);
@@ -113,16 +137,18 @@ public class ListManager : MonoBehaviour{
                 saveCard[i].GetComponent<AttackedCard>().enabled = false;
             }
 
-        }
+        }*/
 
         inputField.text = "";
         inputText.text = "";
+
+        isSearch = true;
 
     }
 
     public void CardList(List<int> cardId) {
 
-        for (int i = 0; i < cardId.Count; i++) {//表示用のカードの生成
+        for (int i = (pageNumber - 1) * MaxpageNumber; i < pageNumber * MaxpageNumber && i < CList.Count; i++) {//表示用のカードの生成
 
             cardDisplayPrefab.Initialize(cardId[i]);
 
@@ -165,9 +191,9 @@ public class ListManager : MonoBehaviour{
         cardModel = new CardModel(id);//test
 
         abilityText.text = "カード効果:\n\n  " + cardModel.ability;
-        attackText.text = "攻撃力：" + cardModel.at.ToString();
-        hitPointText.text = "体力：" + cardModel.hp.ToString();
-        costText.text = "コスト：" + cardModel.cost.ToString();
+        attackText.text = "攻撃力:" + cardModel.at.ToString();
+        hitPointText.text = "体力:" + cardModel.hp.ToString();
+        costText.text = "コスト:" + cardModel.cost.ToString();
         nameText.text = cardModel.name;
         iconImage.sprite = cardModel.icon;
 
@@ -194,8 +220,9 @@ public class ListManager : MonoBehaviour{
 
     public void sortId() {//配列の中のidを並べ替える
 
-        if (CList.Count == saveCard.Count) {//応急処置
+        if (!isSearch) {//検索の有無でソートをしている。
 
+            pageNumber = 1;
 
             referenceCard.Sort((a, b) => a.id - b.id);//Listのソート
 
@@ -204,7 +231,7 @@ public class ListManager : MonoBehaviour{
             }
             saveCard.Clear();//危険なdestroy clear
 
-            for (int i = 0; i < CList.Count; i++) {//inListが動的に生成されるのでCountが使えない。idがかぶることはないのでClistと同じ数だしええやろ
+            for (int i = (pageNumber - 1) * MaxpageNumber; i < pageNumber * MaxpageNumber && i < CList.Count; i++) {//inListが動的に生成されるのでCountが使えない。idがかぶることはないのでClistと同じ数だしええやろ
 
                 cardDisplayPrefab.Initialize(referenceCard[i].id);
 
@@ -218,7 +245,7 @@ public class ListManager : MonoBehaviour{
 
             }
 
-            for (int i = 0; i < CList.Count; i++) {
+            for (int i = 0; i < saveCard.Count; i++) {
                 saveCard[i].GetComponent<AttackedCard>().enabled = false;
             }
 
@@ -227,7 +254,9 @@ public class ListManager : MonoBehaviour{
 
     public void sortHP() {//配列の中のhpを並べ替える
         
-        if (CList.Count == saveCard.Count) {//応急処置
+        if (!isSearch) {
+
+            pageNumber = 1;
 
             referenceCard.Sort((a, b) => a.hp - b.hp);//Listのソート
 
@@ -236,7 +265,7 @@ public class ListManager : MonoBehaviour{
             }
             saveCard.Clear();//危険なdestroy clear
 
-            for (int i = 0; i < CList.Count; i++) {//inListが動的に生成されるのでCountが使えない。idがかぶることはないのでClistと同じ数だしええやろ
+            for (int i = (pageNumber - 1) * MaxpageNumber; i < pageNumber * MaxpageNumber && i < CList.Count; i++) {//inListが動的に生成されるのでCountが使えない。idがかぶることはないのでClistと同じ数だしええやろ
 
                 cardDisplayPrefab.Initialize(referenceCard[i].id);
 
@@ -250,7 +279,7 @@ public class ListManager : MonoBehaviour{
 
             }
 
-            for (int i = 0; i < CList.Count; i++) {
+            for (int i = 0; i < saveCard.Count; i++) {
                 saveCard[i].GetComponent<AttackedCard>().enabled = false;
             }
 
@@ -260,7 +289,9 @@ public class ListManager : MonoBehaviour{
 
     public void sortAttack() {//配列の中のatを並べ替える
 
-        if (CList.Count == saveCard.Count) {//応急処置
+        if (!isSearch) {
+
+            pageNumber = 1;
 
             referenceCard.Sort((a, b) => a.at - b.at);//Listのソート
 
@@ -269,7 +300,7 @@ public class ListManager : MonoBehaviour{
             }
             saveCard.Clear();//危険なdestroy clear
 
-            for (int i = 0; i < CList.Count; i++) {//inListが動的に生成されるのでCountが使えない。idがかぶることはないのでClistと同じ数だしええやろ
+            for (int i = (pageNumber - 1) * MaxpageNumber; i < pageNumber * MaxpageNumber && i < CList.Count; i++) {//inListが動的に生成されるのでCountが使えない。idがかぶることはないのでClistと同じ数だしええやろ
 
                 cardDisplayPrefab.Initialize(referenceCard[i].id);
 
@@ -283,11 +314,104 @@ public class ListManager : MonoBehaviour{
 
             }
 
-            for (int i = 0; i < CList.Count; i++) {
+            for (int i = 0; i < saveCard.Count; i++) {
                 saveCard[i].GetComponent<AttackedCard>().enabled = false;
             }
 
         }
+    }
+
+    public void pageNext() {//検索を2ページ以降考えるなら、変更が必要
+
+        if ((pageNumber < CList.Count / MaxpageNumber + 1) && !isSearch) {
+            pageNumber++;
+
+
+            for (int i = 0; i < saveCard.Count; i++) {//現在表示されているカードの削除
+                Destroy(saveCard[i]);
+            }
+            saveCard.Clear();//危険なdestroy clear
+
+            for (int i = (pageNumber - 1) * MaxpageNumber; i < pageNumber * MaxpageNumber && i < CList.Count; i++) {//inListが動的に生成されるのでCountが使えない。idがかぶることはないのでClistと同じ数だしええやろ
+
+                cardDisplayPrefab.Initialize(referenceCard[i].id);
+
+                GameObject card = Instantiate(cardPrefab, listPanel, false);
+
+                card.transform.localScale = new Vector3(1, 2, 0);
+
+                AddEventTrigger(card, referenceCard[i].id);
+
+                saveCard.Add(card);
+
+            }
+
+            for (int i = 0; i < saveCard.Count; i++) {
+                saveCard[i].GetComponent<AttackedCard>().enabled = false;
+            }
+
+        }
+    }
+
+    public void pageBefore() {
+
+        if (pageNumber > 1 && !isSearch) {
+            pageNumber--;
+
+
+            for (int i = 0; i < saveCard.Count; i++) {//現在表示されているカードの削除
+                Destroy(saveCard[i]);
+            }
+            saveCard.Clear();//危険なdestroy clear
+
+            for (int i = (pageNumber - 1) * MaxpageNumber; i < pageNumber * MaxpageNumber && i < CList.Count; i++) {//inListが動的に生成されるのでCountが使えない。idがかぶることはないのでClistと同じ数だしええやろ
+
+                cardDisplayPrefab.Initialize(referenceCard[i].id);
+
+                GameObject card = Instantiate(cardPrefab, listPanel, false);
+
+                card.transform.localScale = new Vector3(1, 2, 0);
+
+                AddEventTrigger(card, referenceCard[i].id);
+
+                saveCard.Add(card);
+
+            }
+
+            for (int i = 0; i < saveCard.Count; i++) {
+                saveCard[i].GetComponent<AttackedCard>().enabled = false;
+            }
+
+        }
+
+    }
+
+    public void clickBackground() {
+        isSearch = false;
+
+        referenceCard.Sort((a, b) => a.id - b.id);
+
+        for (int i = 0; i < saveCard.Count; i++) {//現在表示されているカードの削除
+            Destroy(saveCard[i]);
+        }
+        saveCard.Clear();//危険なdestroy clear
+
+        for (int i = (pageNumber - 1) * MaxpageNumber; i < pageNumber * MaxpageNumber && i < CList.Count; i++) {//検索に引っ掛かったカードのidをもとに生成
+            cardDisplayPrefab.Initialize(referenceCard[i].id);
+
+            GameObject card = Instantiate(cardPrefab, listPanel, false);
+
+            card.transform.localScale = new Vector3(1, 2, 0);
+
+            AddEventTrigger(card, referenceCard[i].id);
+
+            saveCard.Add(card);
+        }
+
+        for (int i = 0; i < saveCard.Count; i++) {
+            saveCard[i].GetComponent<AttackedCard>().enabled = false;
+        }
+
     }
 
 }
